@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scraped Link</title>
+</head>
+<body>
+    <h1>Scraped Link for "{{ url }}"</h1>
+    {% if do_not_sell_link %}
+        <a href="{{ do_not_sell_link }}" target="_blank">Do not sell my info</a>
+    {% else %}
+        <p>No "Do not sell my info" link found.</p>
+    {% endif %}
+</body>
+</html>

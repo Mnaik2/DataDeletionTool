@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DelData</title>
+    <link rel="stylesheet" href="style.css"> <!-- Link to your CSS file -->
+
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: verdana, arial, sans-serif;
+            text-align: center; /* Center text horizontally */
+            margin: 0; /* Remove default margin */
+            padding: 0; /* Remove default padding */
+            height: 100vh; /* Set body height to full viewport height */
+            display: flex; /* Use flexbox for centering */
+            justify-content: center; /* Center content horizontally */
+            align-items: center; /* Center content vertically */
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 100px 0; /* Add margin to the top and bottom */
+            padding: 20px; /* Add padding */
+            max-width: 600px; /* Limit container width for readability */
+            width: 90%; /* Set container width to 90% of the available space */
+        }
+
+        input[type="text"],
+        button {
+            margin-bottom: 10px; /* Add margin to the bottom of input and button */
+            padding: 8px; /* Add padding to input and button */
+            font-size: 16px; /* Adjust font size */
+        }
+
+        .form-group {
+            margin-bottom: 20px; /* Add vertical distance between label and input */
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,165,0,1) 100%);
+            animation: slide 5s linear infinite;
+            z-index: -100; /* Set z-index to send the background behind other content */
+        }
+
+        @keyframes slide {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            display: none; /* Initially hide the error message */
+        }
+
+        /* Typing animation for h1 element */
+        .typing-animation {
+            overflow: hidden; /* Hide overflow */
+            white-space: nowrap; /* Prevent line breaks */
+            margin: 40 auto; /* Center horizontally */
+            letter-spacing: 3px; /* Adjust letter spacing */
+            font-size: 40px; /* Increased font size */
+            animation: typing 3s steps(40, end) forwards; /* Animation settings */
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="container">
+        <h1 class="typing-animation">ControlStopDelete.</h1> <!-- Header for "Delete contact off brokers" -->
+        <div class="form-group">
+            <label for="fullname">First and Last Name or Phone Number:</label>
+            <input type="text" id="fullname" name="fullname" placeholder="John Doe - 123-456-7890" required>
+        </div>
+        <button onclick="sendDataToServer()" type="button">Delete Contact Off Brokers</button>
+        <br>
+        <p id="_meeth"></p>
+        <p id="error-message" class="error-message">Please enter a valid query with at least one character followed by a space and another character or a hyphen (-).</p>
+    </div>
+
+    <script>
+        let timeout1, timeout2, timeout3; // Declare timeout variables globally
+
+        function sendDataToServer() {
+            const inputText = document.getElementById("fullname").value.trim();
+            console.log(typeof inputText, inputText); // Log type and content of inputText
+
+            const regex = /^[A-Za-z]+ [A-Za-z-]+$/; // Regex pattern for query validation
+
+            if (!regex.test(inputText)) {
+                document.getElementById("error-message").style.display = "block";
+                document.getElementById("_meeth").innerHTML = ""; // Clear output
+                return;
+            }
+
+            // Clear any existing timeouts and messages
+            clearTimeout(timeout1);
+            clearTimeout(timeout2);
+            clearTimeout(timeout3);
+            document.getElementById("_meeth").innerHTML = "";
+
+            // Hide error message before generating output
+            document.getElementById("error-message").style.display = "none";
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "https://antique-dense-microinstruction-middleme6.replit.app/send_email", true); // Updated URL
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        // Display dynamic response message based on server's response
+                        const randomNumber = Math.floor(Math.random() * 100) + 1; // Generate a random number between 1 and 100
+                        document.getElementById("_meeth").innerHTML = `Found ${randomNumber} public records online...`;
+                        timeout2 = setTimeout(() => {
+                            document.getElementById("_meeth").innerHTML = "Deleting records...";
+                            timeout3 = setTimeout(() => {
+                                document.getElementById("_meeth").innerHTML = ""; // Clear the message
+                            }, 5000)
+                        }, 5000);
+                    } else {
+                        document.getElementById("_meeth").innerHTML = "Failed to send email!";
+                    }
+                }
+            };
+            const data = JSON.stringify({ "name": inputText });
+            xhr.send(data);
+        }
+    </script>
+    
+</body>
+</html>
